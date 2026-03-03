@@ -155,3 +155,31 @@ export async function login(req, res, next) {
     next(err);
   }
 }
+
+export function me(req, res) {
+  try {
+    const token = req.cookies?.token;
+    if (!token) return res.status(401).json({ error: "NO_AUTH" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    //console.log("decoded:", decoded);
+
+    return res.json({
+      usuario: {
+        id: decoded.id,
+        nombre: decoded.nombre,
+        correo: decoded.correo,
+        departamento: decoded.departamento,
+        rol: decoded.rol,
+        foto_url: decoded.foto_url || null,
+      },
+    });
+  } catch {
+    return res.status(401).json({ error: "TOKEN_INVALIDO" });
+  }
+}
+
+export function logout(req, res) {
+  res.clearCookie("token", { path: "/" });
+  return res.json({ ok: true });
+}
