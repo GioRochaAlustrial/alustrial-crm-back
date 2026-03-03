@@ -130,14 +130,17 @@ export async function login(req, res, next) {
       { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
 
-    // ✅ Configurar cookie (solo una respuesta después)
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      path: "/",
-      maxAge: 60 * 60 * 1000, // 1 hora
-    });
+   console.log("▶ LOGIN request body:", { correo: req.body.correo });
+
+// después de generar token y antes de res.json
+console.log("▶ Setting cookie token (first 40 chars):", token?.slice?.(0,40));
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: false, // en local
+  sameSite: "None", // en local para cross-port
+  path: "/",
+  maxAge: 60 * 60 * 1000,
+});
 
     // ✅ Solo un res.json
     return res.status(200).json({
@@ -157,6 +160,8 @@ export async function login(req, res, next) {
 }
 
 export function me(req, res) {
+  console.log("🟦 /auth/me cookies:", req.cookies);
+console.log("🟦 /auth/me headers.cookie:", req.headers.cookie);
   try {
     const token = req.cookies?.token;
     if (!token) return res.status(401).json({ error: "NO_AUTH" });
