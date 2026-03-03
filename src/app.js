@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/crm", routes);
-app.get("/api/users", async (req, res) => {
+app.get("/api/users2", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM usuarios LIMIT 10;");
     res.status(200).json({
