@@ -136,7 +136,7 @@ export async function login(req, res, next) {
 console.log("▶ Setting cookie token (first 40 chars):", token?.slice?.(0,40));
 res.cookie("token", token, {
   httpOnly: true,
-  secure: false, // en local
+  secure: true, // en local
   sameSite: "None", // en local para cross-port
   path: "/",
   maxAge: 60 * 60 * 1000,
