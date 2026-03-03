@@ -34,14 +34,20 @@ export async function login(req, res, next) {
     );
 
     // ✅ cookie para que Next middleware la lea
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,     // true en prod con https
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 1000,
-    });
-
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: false,     // true en prod con https
+    //   sameSite: "lax",
+    //   path: "/",
+    //   maxAge: 60 * 60 * 1000,
+    // });
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  maxAge: 60 * 60 * 1000,
+});
+res.json({ ok: true, usuario });
     //console.log("usuario.rol:", usuario.rol);
 
     return res.json({
