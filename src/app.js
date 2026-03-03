@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 
 app.use(helmet());
 app.use(cors({
-    origin: "http://localhost:3100",
+    origin: "https://alustrial-crm-front.onrender.com",
     credentials: true,
 }));
 app.use(express.json());
