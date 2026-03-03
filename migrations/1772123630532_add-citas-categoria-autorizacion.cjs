@@ -1,8 +1,16 @@
 exports.up = (pgm) => {
   // categoria cita: levantamiento / visita comercial
-  pgm.addColumn("citas", {
-    categoria: { type: "varchar(30)", notNull: true, default: "LEVANTAMIENTO" },
-  });
+pgm.addColumn(
+    "citas",
+    {
+      categoria: {
+        type: "varchar(30)",
+        notNull: true,
+        default: "LEVANTAMIENTO",
+      },
+    },
+    { ifNotExists: true } // ← evita error si la columna ya existe
+  );
 
   // autorización
   pgm.addColumns("citas", {
