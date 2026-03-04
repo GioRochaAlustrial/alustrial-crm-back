@@ -145,6 +145,7 @@ res.cookie("token", token, {
     // ✅ Solo un res.json
     return res.status(200).json({
       ok: true,
+      token:token,
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,
