@@ -7,7 +7,7 @@ import { isGerente, isJefeDepto } from "../utils/authz.js";
 import { createNotificacion } from "../repositories/notificaciones.repo.js";
 import { getGerenteIdByDepartamentoNombre, getDeptosByGerenteId } from "../repositories/departamentos.repo.js";
 import { query } from "../repositories/db.js";
-
+import { pool } from "../config/db.js";  
 const ESTADOS_VALIDOS = new Set(["PROGRAMADA", "REALIZADA", "VENCIDA", "CANCELADA"]);
 const TIPOS_VALIDOS = new Set(["HVAC", "ELECTRICA", "CIVIL", "ATM/CONTROL"]);
 
@@ -59,7 +59,7 @@ export async function crearCita(req, res) {
     // set departamento_id para comerciales
     let departamento_id = null;
     if (isComercial) {
-      const depRes = await query(
+      const depRes = await pool.query(
         "SELECT id FROM departamentos WHERE UPPER(nombre)='VENTAS' LIMIT 1;"
       );
       departamento_id = depRes.rows?.[0]?.id ?? null;
@@ -78,7 +78,7 @@ export async function crearCita(req, res) {
 
     // notificar a Gerente de Operaciones si es comercial
     if (isComercial) {
-      const autRes = await query(`
+      const autRes = await  pool.query(`
         SELECT id
           FROM usuarios
           WHERE UPPER(rol)='GERENTE'
