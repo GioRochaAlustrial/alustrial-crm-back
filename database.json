@@ -1,0 +1,7 @@
+{
+  "dev": {
+    "connectionString": "${DATABASE_URL}",
+    "migrationsDir": "migrations",
+    "schema": "public"
+  }
+}
