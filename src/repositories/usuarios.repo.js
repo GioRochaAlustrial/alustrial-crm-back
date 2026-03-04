@@ -1,5 +1,5 @@
 import { query } from "./db.js";
-
+import { pool } from "../config/db.js";  
 export async function createUsuario({
   nombre,
   correo,
@@ -40,7 +40,7 @@ export async function createUsuario({
     foto_url,
   ];
 
-  const { rows } = await query(sql, values);
+  const { rows } = await pool.query(sql, values);
   return rows[0];
 }
 
@@ -51,17 +51,17 @@ export async function getUsuarioById(id) {
     LEFT JOIN departamentos d ON d.id = u.departamento_id
     WHERE u.id = $1;
   `;
-  const { rows } = await query(sql, [id]);
+  const { rows } = await pool.query(sql, [id]);
   return rows[0] ?? null;
 }
 
 export async function getUsuarioByCorreo(correo) {
   const sql = `
-    SELECT id, nombre, correo, telefono, departamento, contrasena, activo, rol, cargo, foto_url, created_at, updated_at
+    SELECT id, nombre, correo, telefono, departamento, contrasena, activo, rol, foto_url, created_at, updated_at
     FROM usuarios
     WHERE correo = $1;
   `;
-  const { rows } = await query(sql, [correo]);
+  const { rows } = await pool.query(sql, [correo]);
   console.log(rows[0])
   return rows[0] ?? null;
 }
@@ -72,7 +72,7 @@ export async function listUsuarios() {
     FROM usuarios
     ORDER BY id DESC;
   `;
-  const { rows } = await query(sql);
+  const { rows } = await pool.query(sql);
   return rows;
 }
 
@@ -97,12 +97,12 @@ export async function updateUsuario(id, fields) {
     RETURNING id, nombre, correo, telefono, departamento, activo, created_at, updated_at;
   `;
 
-  const { rows } = await query(sql, [...values, id]);
+  const { rows } = await pool.query(sql, [...values, id]);
   return rows[0] ?? null;
 }
 
 export async function deleteUsuario(id) {
   const sql = `DELETE FROM usuarios WHERE id = $1 RETURNING id;`;
-  const { rows } = await query(sql, [id]);
+  const { rows } = await pool.query(sql, [id]);
   return rows[0] ?? null;
 }

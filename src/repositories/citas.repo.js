@@ -1,5 +1,5 @@
 import { query } from "./db.js";
-
+import { pool } from "../config/db.js";  
 export async function existeCitaActiva(id_prospectos) {
   const sql = `
     SELECT *
@@ -10,7 +10,7 @@ export async function existeCitaActiva(id_prospectos) {
     LIMIT 1;
   `;
 
-  const result = await query(sql, [Number(id_prospectos)]);
+  const result = await pool.query(sql, [Number(id_prospectos)]);
   const rows = result?.rows ?? result;
   return rows?.[0] ?? null;
 }
@@ -58,7 +58,7 @@ export async function createCita({
     departamento_id === null ? null : Number(departamento_id),
   ];
 
-  const result = await query(sql, values);
+  const result = await pool.query(sql, values);
   const rows = result?.rows ?? result;
   return rows?.[0] ?? null;
 }
@@ -74,7 +74,7 @@ export async function marcarCitaRealizada(id, especialistaId) {
     RETURNING *;
   `;
 
-  const result = await query(sql, [Number(especialistaId), Number(id)]);
+  const result = await pool.query(sql, [Number(especialistaId), Number(id)]);
   const rows = result?.rows ?? result;
   return rows?.[0] ?? null;
 }
@@ -91,7 +91,7 @@ export async function getCitaAbiertaByProspecto(id_prospectos, id_usuarios) {
     LIMIT 1;
   `;
 
-  const result = await query(sql, [Number(id_prospectos), Number(id_usuarios)]);
+  const result = await pool.query(sql, [Number(id_prospectos), Number(id_usuarios)]);
   const rows = result?.rows ?? result;
   return rows?.[0] ?? null;
 }
@@ -105,7 +105,7 @@ export async function updateCitaEstadoForUsuario(id_cita, id_usuarios, estado) {
       AND estado = 'PROGRAMADA'
     RETURNING *;
   `;
-  const result = await query(sql, [estado, Number(id_cita), Number(id_usuarios)]);
+  const result = await pool.query(sql, [estado, Number(id_cita), Number(id_usuarios)]);
   const rows = result?.rows ?? result;
   return rows?.[0] ?? null;
 }
@@ -120,7 +120,7 @@ export async function cancelCitaForUsuario(id_cita, id_usuarios) {
     RETURNING *;
   `;
 
-  const result = await query(sql, [Number(id_cita), Number(id_usuarios)]);
+  const result = await pool.query(sql, [Number(id_cita), Number(id_usuarios)]);
   const rows = result?.rows ?? result;
   return rows?.[0] ?? null;
 }
@@ -132,7 +132,7 @@ export async function getCitaByIdForUsuario(id_cita, id_usuarios) {
     WHERE id = $1 AND id_usuarios = $2
     LIMIT 1;
   `;
-  const result = await query(sql, [Number(id_cita), Number(id_usuarios)]);
+  const result = await pool.query(sql, [Number(id_cita), Number(id_usuarios)]);
   const rows = result?.rows ?? result;
   return rows?.[0] ?? null;
 }
@@ -151,7 +151,7 @@ export async function reprogramarCitaForUsuario(id_cita, id_usuarios, fecha_hora
     RETURNING *;
   `;
 
-  const result = await query(sql, [
+  const result = await pool.query(sql, [
     fecha_hora,
     nota,
     tipo,
@@ -188,7 +188,7 @@ export async function listCitasForEspecialista({ tipo = null, estado = null }) {
     ORDER BY c.fecha_hora ASC;
   `;
 
-  const { rows } = await query(sql, values);
+  const { rows } = await pool.query(sql, values);
   return rows;
 }
 
@@ -201,7 +201,7 @@ export async function getCitasForUsuario(user) {
   `;
 
   if (user.rol === "DIRECTOR") {
-    const { rows } = await query(baseQuery);
+    const { rows } = await pool.query(baseQuery);
     return rows;
   }
 
@@ -210,7 +210,7 @@ export async function getCitasForUsuario(user) {
       ${baseQuery}
       WHERE d.gerente_id = $1
     `;
-    const { rows } = await query(sql, [user.id]);
+    const { rows } = await pool.query(sql, [user.id]);
     return rows;
   }
 
@@ -219,7 +219,7 @@ export async function getCitasForUsuario(user) {
       ${baseQuery}
       WHERE c.tipo = $1
     `;
-    const { rows } = await query(sql, [user.departamento_nombre]);
+    const { rows } = await pool.query(sql, [user.departamento_nombre]);
     return rows;
   }
 
@@ -229,7 +229,7 @@ export async function getCitasForUsuario(user) {
     JOIN citas_asignaciones ca ON ca.id_cita = c.id
     WHERE ca.id_usuario = $1
   `;
-  const { rows } = await query(sql, [user.id]);
+  const { rows } = await pool.query(sql, [user.id]);
   return rows;
 }
 
@@ -303,7 +303,7 @@ export async function listCitasVisiblesForUsuario({
     estado ? String(estado).toUpperCase() : null, // $5
   ];
 
-  const { rows } = await query(sql, values);
+  const { rows } = await pool.query(sql, values);
   return rows;
 }
 
@@ -314,7 +314,7 @@ export async function assignCitaUsuarios({ citaId, usuariosIds, assignedBy }) {
     ON CONFLICT (id_cita, id_usuario) DO NOTHING
     RETURNING id_cita, id_usuario, assigned_by, assigned_at;
   `;
-  const { rows } = await query(sql, [Number(citaId), usuariosIds.map(Number), Number(assignedBy)]);
+  const { rows } = await pool.query(sql, [Number(citaId), usuariosIds.map(Number), Number(assignedBy)]);
   return rows;
 }
 
@@ -335,13 +335,13 @@ export async function reprogramarCitaVentasReseteandoAuth(id_cita, id_usuarios, 
       AND estado = 'PROGRAMADA'
     RETURNING *;
   `;
-  const { rows } = await query(sql, [fecha_hora, nota, tipo, Number(id_cita), Number(id_usuarios)]);
+  const { rows } = await pool.query(sql, [fecha_hora, nota, tipo, Number(id_cita), Number(id_usuarios)]);
   return rows?.[0] ?? null;
 }
 
 export async function getCitaById(id_cita) {
   const sql = `SELECT * FROM citas WHERE id = $1 LIMIT 1;`;
-  const { rows } = await query(sql, [Number(id_cita)]);
+  const { rows } = await pool.query(sql, [Number(id_cita)]);
   return rows?.[0] ?? null;
 }
 
@@ -382,7 +382,7 @@ export async function listAutorizacionesPendientesByDeptos({ deptos, categoria }
     ORDER BY c.fecha_hora ASC;
   `;
 
-  const { rows } = await query(sql, values);
+  const { rows } = await pool.query(sql, values);
   return rows;
 }
 
@@ -402,7 +402,7 @@ export async function resolverAutorizacionCita({ id_cita, accion, auth_by, motiv
     RETURNING *;
   `;
 
-  const { rows } = await query(sql, [
+  const { rows } = await pool.query(sql, [
     auth_estado,
     Number(auth_by),
     motivo,
@@ -425,7 +425,7 @@ export async function getCitaAbiertaByProspectoCategoria(id_prospectos, id_usuar
     LIMIT 1;
   `;
 
-  const result = await query(sql, [Number(id_prospectos), Number(id_usuarios), String(categoria).toUpperCase()]);
+  const result = await pool.query(sql, [Number(id_prospectos), Number(id_usuarios), String(categoria).toUpperCase()]);
   const rows = result?.rows ?? result;
   return rows?.[0] ?? null;
 }
@@ -442,6 +442,6 @@ export async function listAutorizacionesPendientesByCategoria({ categoria }) {
       AND c.categoria = $1
     ORDER BY c.fecha_hora ASC;
   `;
-  const { rows } = await query(sql, [String(categoria).toUpperCase()]);
+  const { rows } = await pool.query(sql, [String(categoria).toUpperCase()]);
   return rows;
 }

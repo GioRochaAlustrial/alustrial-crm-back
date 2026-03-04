@@ -1,7 +1,6 @@
 {
   "dev": {
-    "connectionString": "${DATABASE_URL}",
-    "migrationsDir": "migrations",
-    "schema": "public"
+    "driver": "pg",
+    "connectionString": "postgresql://admin:2Lp56JEiCKejfwyIDmyy8v5gabRmgZaj@dpg-d6evbp08tnhs73en5100-a.oregon-postgres.render.com/alustrialdb?sslmode=require"
   }
 }

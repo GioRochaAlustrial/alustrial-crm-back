@@ -1,12 +1,15 @@
 import { query } from "./db.js";
 
+import { pool } from "../config/db.js";  
 export async function createNotificacion({ id_usuario, tipo, payload = {} }) {
     const sql = `
     INSERT INTO notificaciones (id_usuario, tipo, payload, leida, created_at)
     VALUES ($1, $2, $3::jsonb, false, NOW())
     RETURNING *;
   `;
-    const { rows } = await query(sql, [Number(id_usuario), String(tipo), JSON.stringify(payload)]);
+
+    const { rows } = await pool.query(sql, [Number(id_usuario), String(tipo), JSON.stringify(payload)]);
+
     return rows?.[0] ?? null;
 }
 
@@ -19,7 +22,7 @@ export async function listCitasPendientesAutorizacion({ categoria }) {
       AND c.auth_estado = 'PENDIENTE'
     ORDER BY c.fecha_hora ASC;
   `;
-    const { rows } = await query(sql, [String(categoria).toUpperCase()]);
+    const { rows } = await  pool.query(sql, [String(categoria).toUpperCase()]);
     return rows;
 }
 
@@ -32,7 +35,7 @@ export async function listNotificacionesByUser({ id_usuario, only_unread = true,
     ORDER BY created_at DESC
     LIMIT $3;
   `;
-  const { rows } = await query(sql, [Number(id_usuario), Boolean(only_unread), Number(limit)]);
+  const { rows } = await  pool.query(sql, [Number(id_usuario), Boolean(only_unread), Number(limit)]);
   return rows;
 }
 
@@ -43,6 +46,6 @@ export async function markNotificacionLeida({ id, id_usuario }) {
     WHERE id = $1 AND id_usuario = $2
     RETURNING *;
   `;
-  const { rows } = await query(sql, [Number(id), Number(id_usuario)]);
+  const { rows } = await  pool.query(sql, [Number(id), Number(id_usuario)]);
   return rows?.[0] ?? null;
 }

@@ -1,5 +1,6 @@
 import { query } from "./db.js";
 
+import { pool } from "../config/db.js";  
 export async function createProspecto({
   id_usuarios,
   empresa,
@@ -32,7 +33,8 @@ export async function createProspecto({
     tipo_contacto,
   ];
 
-  const { rows } = await query(sql, values);
+
+  const { rows } = await pool.query(sql, values);
   return rows[0];
 }
 
@@ -40,6 +42,7 @@ export async function listProspectosByUsuario(id_usuarios) {
   const sql = `
     SELECT
       p.*,
+
 
       /* =========================
          VISITA COMERCIAL (por auth)
@@ -62,11 +65,13 @@ export async function listProspectosByUsuario(id_usuarios) {
     FROM prospectos p
 
     /* ------- Comercial ------- */
+
     LEFT JOIN LATERAL (
       SELECT
         c.id,
         c.fecha_hora,
         c.nota,
+
         c.auth_estado,
         c.auth_motivo
       FROM citas c
@@ -87,6 +92,7 @@ export async function listProspectosByUsuario(id_usuarios) {
         c.fecha_hora,
         c.nota,
         c.tipo,
+
         c.estado,
         CASE
           WHEN c.estado = 'PROGRAMADA'
@@ -97,7 +103,9 @@ export async function listProspectosByUsuario(id_usuarios) {
       FROM citas c
       WHERE c.id_prospectos = p.id
         AND c.id_usuarios = p.id_usuarios
+
         AND c.categoria = 'LEVANTAMIENTO'
+
         AND c.estado = 'PROGRAMADA'
       ORDER BY
         (c.fecha_hora >= NOW()) DESC,
@@ -105,11 +113,14 @@ export async function listProspectosByUsuario(id_usuarios) {
       LIMIT 1
     ) lv ON TRUE
 
+
     WHERE p.id_usuarios = $1
     ORDER BY p.id DESC;
   `;
 
-  const result = await query(sql, [Number(id_usuarios)]);
+
+  const result = await pool.query(sql, [Number(id_usuarios)]);
+
   return result?.rows ?? result ?? [];
 }
 
@@ -117,6 +128,7 @@ export async function listProspectosAll() {
   const sql = `
     SELECT
       p.*,
+
 
       -- CITA COMERCIAL
       nc_comercial.id AS comercial_cita_id,
@@ -172,17 +184,21 @@ export async function listProspectosAll() {
     ORDER BY p.id DESC;
   `;
 
-  const result = await query(sql);
+
+
+  const result = await pool.query(sql);
   return result?.rows ?? result ?? [];
 }
 
 export async function getProspectoByIdForUsuario(id, id_usuarios) {
   const sql = `
+
     SELECT id, id_usuarios, empresa, direccion, nombre, telefono, extension, celular, correo, tipo_contacto, created_at, updated_at
     FROM prospectos
     WHERE id = $1 AND id_usuarios = $2;
   `;
-  const { rows } = await query(sql, [id, id_usuarios]);
+  
+  const { rows } = await pool.query(sql, [id, id_usuarios]);
   return rows[0] ?? null;
 }
 
@@ -192,7 +208,8 @@ export async function getProspectoById(id) {
     FROM prospectos
     WHERE id = $1;
   `;
-  const { rows } = await query(sql, [id]);
+
+  const { rows } = await pool.query(sql, [id]);
   return rows[0] ?? null;
 }
 
@@ -249,21 +266,24 @@ export async function updateProspectoForUsuario(id, id_usuarios, p) {
     UPDATE prospectos
     SET ${setParts.join(", ")}
     WHERE id = ${whereId} AND id_usuarios = ${whereUser}
+
     RETURNING id, id_usuarios, empresa, direccion, nombre, telefono, extension, celular, correo, tipo_contacto, created_at, updated_at;
   `;
 
-  const { rows } = await query(sql, values);
+  const { rows } = await pool.query(sql, values);
   return rows?.[0] ?? null;
 }
 
 export async function deleteProspectoForUsuario(id, id_usuarios) {
   const sql = `DELETE FROM prospectos WHERE id = $1 AND id_usuarios = $2 RETURNING id;`;
-  const { rows } = await query(sql, [id, id_usuarios]);
+
+  const { rows } = await pool.query(sql, [id, id_usuarios]);
   return rows[0] ?? null;
 }
 
 export async function deleteProspecto(id) {
   const sql = `DELETE FROM prospectos WHERE id = $1 RETURNING id;`;
-  const { rows } = await query(sql, [id]);
+
+  const { rows } = await pool.query(sql, [id]);
   return rows[0] ?? null;
 }
