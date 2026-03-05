@@ -926,7 +926,7 @@ export async function listAutorizacionesByCategoria({ categoria, auth_estado }) 
     ${where}
     ORDER BY c.fecha_hora DESC;
   `;
-
+  console.log(sql)
   const { rows } = await pool.query(sql, values);
   return rows;
 }
