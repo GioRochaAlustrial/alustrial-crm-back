@@ -965,29 +965,29 @@ export async function resolverAutorizacion(req, res) {
     }
     console.log(cita)
     // ADMIN/DIRECTOR: puede autorizar todo (si quieres)
-    if (rol !== "ADMIN" && rol !== "DIRECTOR") {
-      if (rol !== "GERENTE") return res.status(403).json({ error: "NO_AUTORIZADO" });
+    // if (rol !== "ADMIN" && rol !== "DIRECTOR") {
+    //   if (rol !== "GERENTE") return res.status(403).json({ error: "NO_AUTORIZADO" });
 
-      // Validar que el gerente tenga control del depto de la cita (por tipo)
-      const deptos = await getDeptosByGerenteId(userId);
-      const tipo = String(cita.tipo || "").toUpperCase();
-      const tieneDepto = deptos.some(d => String(d).toUpperCase() === tipo);
-      console.log(deptos)
-      // Regla por categoría: filtrar ventas vs levantamiento
-      const categoria = String(cita.categoria || "LEVANTAMIENTO").toUpperCase();
-      console.log(categoria)
-      console.log(tipo)
-      if (categoria === "VISITA_COMERCIAL") {
-        if (tipo !== "VENTAS" || !tieneDepto) {
-          return res.status(403).json({ error: "NO_AUTORIZADO_CATEGORIA" });
-        }
-      } else {
-        // LEVANTAMIENTO
-        if (tipo === "VENTAS" || !tieneDepto) {
-          return res.status(403).json({ error: "NO_AUTORIZADO_CATEGORIA_2" });
-        }
-      }
-    }
+    //   // Validar que el gerente tenga control del depto de la cita (por tipo)
+    //   const deptos = await getDeptosByGerenteId(userId);
+    //   const tipo = String(cita.tipo || "").toUpperCase();
+    //   const tieneDepto = deptos.some(d => String(d).toUpperCase() === tipo);
+    //   console.log(deptos)
+    //   // Regla por categoría: filtrar ventas vs levantamiento
+    //   const categoria = String(cita.categoria || "LEVANTAMIENTO").toUpperCase();
+    //   console.log(categoria)
+    //   console.log(tipo)
+    //   if (categoria === "VISITA_COMERCIAL") {
+    //     if (tipo !== "VENTAS" || !tieneDepto) {
+    //       return res.status(403).json({ error: "NO_AUTORIZADO_CATEGORIA" });
+    //     }
+    //   } else {
+    //     // LEVANTAMIENTO
+    //     if (tipo === "VENTAS" || !tieneDepto) {
+    //       return res.status(403).json({ error: "NO_AUTORIZADO_CATEGORIA_2" });
+    //     }
+    //   }
+    // }
 
     const updated = await resolverAutorizacionCita({
       id_cita: id,
