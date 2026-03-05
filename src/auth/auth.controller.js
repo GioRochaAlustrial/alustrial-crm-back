@@ -170,7 +170,7 @@ console.log("🟦 /auth/me headers.cookie:", req.headers.cookie);
     if (!token) return res.status(401).json({ error: "NO_AUTH" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    //console.log("decoded:", decoded);
+    console.log("decoded:", decoded);
 
     return res.json({
       usuario: {
@@ -179,6 +179,7 @@ console.log("🟦 /auth/me headers.cookie:", req.headers.cookie);
         correo: decoded.correo,
         departamento: decoded.departamento,
         rol: decoded.rol,
+        cargo: decoded.cargo,
         foto_url: decoded.foto_url || null,
       },
     });

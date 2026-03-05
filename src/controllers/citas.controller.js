@@ -922,7 +922,7 @@ export async function listarAutorizaciones(req, res) {
 
     // ✅ soporte filtro por estado desde UI
     const estado = req.query.estado ? String(req.query.estado).toUpperCase() : "TODAS";
-
+    console.log(rol,cargo)
     // ✅ Gerente Operaciones ve todas (Pendiente/Autorizada/Rechazada) de VISITA_COMERCIAL
     if (rol === "GERENTE" && cargo === "GERENTE_OPERACIONES") {
       const rows = await listAutorizacionesByCategoria({
