@@ -984,7 +984,7 @@ export async function resolverAutorizacion(req, res) {
       } else {
         // LEVANTAMIENTO
         if (tipo === "VENTAS" || !tieneDepto) {
-          return res.status(403).json({ error: "NO_AUTORIZADO_CATEGORIA" });
+          return res.status(403).json({ error: "NO_AUTORIZADO_CATEGORIA_2" });
         }
       }
     }
