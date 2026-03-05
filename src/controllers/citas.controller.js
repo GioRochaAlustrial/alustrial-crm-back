@@ -963,7 +963,7 @@ export async function resolverAutorizacion(req, res) {
     if (String(cita.auth_estado).toUpperCase() !== "PENDIENTE") {
       return res.status(409).json({ error: "CITA_NO_PENDIENTE" });
     }
-
+    console.log(cita)
     // ADMIN/DIRECTOR: puede autorizar todo (si quieres)
     if (rol !== "ADMIN" && rol !== "DIRECTOR") {
       if (rol !== "GERENTE") return res.status(403).json({ error: "NO_AUTORIZADO" });
@@ -972,9 +972,11 @@ export async function resolverAutorizacion(req, res) {
       const deptos = await getDeptosByGerenteId(userId);
       const tipo = String(cita.tipo || "").toUpperCase();
       const tieneDepto = deptos.some(d => String(d).toUpperCase() === tipo);
-
+      console.log(deptos)
       // Regla por categoría: filtrar ventas vs levantamiento
       const categoria = String(cita.categoria || "LEVANTAMIENTO").toUpperCase();
+      console.log(categoria)
+      console.log(tipo)
       if (categoria === "VISITA_COMERCIAL") {
         if (tipo !== "VENTAS" || !tieneDepto) {
           return res.status(403).json({ error: "NO_AUTORIZADO_CATEGORIA" });
