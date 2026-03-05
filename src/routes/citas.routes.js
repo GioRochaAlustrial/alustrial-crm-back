@@ -30,7 +30,7 @@ router.put("/:id/reprogramar", requireRole("VENTAS", "ADMIN"), reprogramarCita);
  * - ADMIN
  */
 router.get("/autorizaciones", requireRole("GERENTE", "DIRECTOR", "ADMIN"), listarAutorizaciones);
-router.put("/:id/autorizacion", requireRole("GERENTE", "DIRECTOR", "ADMIN"), resolverAutorizacion);
+router.put("/:id/autorizaciones", requireRole("GERENTE", "DIRECTOR", "ADMIN"), resolverAutorizacion);
 
 /**
  * =========================
