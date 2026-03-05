@@ -29,7 +29,7 @@ router.put("/:id/reprogramar", requireRole("VENTAS", "ADMIN"), reprogramarCita);
  * - DIRECTOR (si lo agregas)
  * - ADMIN
  */
-router.get("/autorizaciones", b("GERENTE", "DIRECTOR", "ADMIN"), listarAutorizaciones);
+// router.get("/autorizaciones", b("GERENTE", "DIRECTOR", "ADMIN"), listarAutorizaciones);
 router.get(
   "/autorizaciones",
   authMiddleware,
