@@ -57,7 +57,7 @@ export async function getUsuarioById(id) {
 
 export async function getUsuarioByCorreo(correo) {
   const sql = `
-    SELECT id, nombre, correo, telefono, departamento, contrasena, activo, rol, foto_url, created_at, updated_at
+    SELECT id, nombre, correo, cargo,telefono, departamento, contrasena, activo, rol, foto_url, created_at, updated_at
     FROM usuarios
     WHERE correo = $1;
   `;

@@ -116,7 +116,7 @@ export async function login(req, res, next) {
     if (!match) {
       return res.status(401).json({ error: "CREDENCIALES_INVALIDAS" });
     }
-
+    console.log(usuario)
     const token = jwt.sign(
       {
         id: usuario.id,
