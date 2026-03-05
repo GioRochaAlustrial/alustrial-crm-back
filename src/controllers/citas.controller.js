@@ -907,6 +907,7 @@ export async function listarCitas(req, res) {
 
 export async function listarAutorizaciones(req, res) {
   console.log('listarAutorizaciones')
+  console.log(req.user)
   try {
     const user = req.user || req.usuario;
     const userId = getUserId(req);
